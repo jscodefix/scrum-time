@@ -1,3 +1,16 @@
+# Submission by Jeff Sheffel (jscodefix)
+### March 3, 2022
+
+## How to Execute
+$ ./availability.rb <comma-separated-list-of-usernames>
+- unknown usernames will be ignored
+
+## My Guiding Principles
+- solve the problem according to the rules (specified below, see Background section)
+- use a minimalist approach by not adding extra functionality
+- show Ruby programming best practices
+
+
 # Background
 
 Most calendar applications provide some kind of "meet with" feature where the user
