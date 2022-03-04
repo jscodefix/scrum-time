@@ -11,12 +11,18 @@ $ rspec spec/
 ## My Guiding Principles
 - solve the problem according to the rules (specified below, see Background section)
 - use a minimalist approach by not adding extra functionality
+- use OOP
+- use TDD
 - show Ruby programming best practices
 
 ## Notes
 - developed with Ruby 3.1
 - assumes input data (files) are clean and normalized
 
+## Discoveries
+- adding a single require 'rspec' line to any spec.rb activates RSpec in Intellij
+- running tests requires exposing class attributes (attr_reader)?
+- might have used OpenStruct
 
 # Background
 

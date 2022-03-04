@@ -3,6 +3,13 @@ require 'time'
 
 module ScrumTime
   class Block
+    PRECEDED_BY = 1
+    INTERSECTED_ABOVE_BY = 2
+    INTERSECTED_BELOW_BY = 3
+    FOLLOWED_BY = 4
+    SURROUNDS = 5
+    SURROUNDED_BY = 6
+
     attr_reader :start_time, :end_time
 
     def initialize(start_time, end_time)
@@ -17,6 +24,17 @@ module ScrumTime
 
     def start_end_on_different_days
       start_time.year != end_time.year || start_time.yday != end_time.yday
+    end
+
+    def compares_to(other)
+      return PRECEDED_BY if other.end_time < start_time
+      return INTERSECTED_ABOVE_BY if other.start_time <= start_time && other.end_time <= end_time
+      return SURROUNDED_BY if other.start_time <= start_time && other.end_time >= end_time
+      return INTERSECTED_BELOW_BY if other.start_time <= end_time && other.end_time > end_time
+      return FOLLOWED_BY if other.start_time >= end_time
+      return SURROUNDS if other.start_time > start_time && other.end_time <= end_time
+
+      raise 'comparison failed'
     end
   end
 end
