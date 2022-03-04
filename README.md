@@ -5,10 +5,17 @@
 $ ./availability.rb <comma-separated-list-of-usernames>
 - unknown usernames will be ignored
 
+The test suite can be executed as:
+$ rspec spec/
+
 ## My Guiding Principles
 - solve the problem according to the rules (specified below, see Background section)
 - use a minimalist approach by not adding extra functionality
 - show Ruby programming best practices
+
+## Notes
+- developed with Ruby 3.1
+- assumes input data (files) are clean and normalized
 
 
 # Background

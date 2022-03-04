@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'date'
+require 'scrum_time'
+require 'time'
 
 module ScrumTime
   class Event
@@ -8,8 +9,8 @@ module ScrumTime
     def initialize(event_hash)
       @id = event_hash[:id]
       @user_id = event_hash[:user_id]
-      @start_time = DateTime.iso8601(event_hash[:start_time])
-      @end_time = DateTime.iso8601(event_hash[:end_time])
+      @start_time = Time.parse(event_hash[:start_time] + ScrumTime::TIMEZONE)
+      @end_time = Time.parse(event_hash[:end_time] + ScrumTime::TIMEZONE)
     end
 
     def self.create_events(event_array)
