@@ -30,23 +30,23 @@ module ScrumTime
       end
 
       it 'begins with an empty blocks array' do
-        expect(day1.user_blocks).to be_a(Array)
-        expect(day1.user_blocks).to be_empty
+        expect(day1.unavailable_blocks).to be_a(Array)
+        expect(day1.unavailable_blocks).to be_empty
       end
     end
 
     describe '#add_block' do
       it 'allows addition of first block' do
         day1.add_block(block1)
-        expect(day1.user_blocks.size).to eq 1
-        expect(day1.user_blocks.first.start_time.hour).to eq 8
-        expect(day1.user_blocks.first.end_time.hour).to eq 10
+        expect(day1.unavailable_blocks.size).to eq 1
+        expect(day1.unavailable_blocks.first.start_time.hour).to eq 8
+        expect(day1.unavailable_blocks.first.end_time.hour).to eq 10
       end
 
       it 'allows addition of multiple blocks' do
         day1.add_block(block1)
         day1.add_block(block2)
-        expect(day1.user_blocks.size).to eq 2
+        expect(day1.unavailable_blocks.size).to eq 2
       end
 
       it 'sorts blocks by start time' do
@@ -54,9 +54,9 @@ module ScrumTime
         day1.add_block(block1)
         day1.add_block(block3)
         day1.add_block(block4)
-        expect(day1.user_blocks[0].start_time.hour).to be <= day1.user_blocks[1].start_time.hour
-        expect(day1.user_blocks[1].start_time.hour).to be <= day1.user_blocks[2].start_time.hour
-        expect(day1.user_blocks[2].start_time.hour).to be <= day1.user_blocks[3].start_time.hour
+        expect(day1.unavailable_blocks[0].start_time.hour).to be <= day1.unavailable_blocks[1].start_time.hour
+        expect(day1.unavailable_blocks[1].start_time.hour).to be <= day1.unavailable_blocks[2].start_time.hour
+        expect(day1.unavailable_blocks[2].start_time.hour).to be <= day1.unavailable_blocks[3].start_time.hour
       end
 
       it 'rejects blocks with start times before the day start time' do
@@ -66,7 +66,7 @@ module ScrumTime
         )
 
         day1.add_block(block_wrong_day)
-        expect(day1.user_blocks.size).to eq 0
+        expect(day1.unavailable_blocks.size).to eq 0
       end
 
       it 'rejects blocks with start times after the day end time' do
@@ -76,7 +76,7 @@ module ScrumTime
         )
 
         day1.add_block(block_wrong_day)
-        expect(day1.user_blocks.size).to eq 0
+        expect(day1.unavailable_blocks.size).to eq 0
       end
     end
 
@@ -91,7 +91,7 @@ module ScrumTime
 
       it 'handles a single block' do
         day1.add_block(block2)
-        result = day1.reduce_blocks
+        result = day1.consolidate_blocks
 
         expect(result.size).to eq 1
         expect(result.first.start_time.hour).to eq 10
@@ -101,7 +101,7 @@ module ScrumTime
       it 'handles two non-intersecting block' do
         day1.add_block(block2)
         day1.add_block(block3)
-        result = day1.reduce_blocks
+        result = day1.consolidate_blocks
 
         expect(result.size).to eq 2
         expect(result[0].start_time.hour).to eq 10
@@ -113,7 +113,7 @@ module ScrumTime
       it 'handles two intersecting block' do
         day1.add_block(block2)
         day1.add_block(block5)
-        result = day1.reduce_blocks
+        result = day1.consolidate_blocks
 
         expect(result.size).to eq 1
         expect(result.first.start_time.hour).to eq 10
@@ -124,7 +124,7 @@ module ScrumTime
         day1.add_block(block2)
         day1.add_block(block5)
         day1.add_block(block3)
-        result = day1.reduce_blocks
+        result = day1.consolidate_blocks
 
         expect(result.size).to eq 2
         expect(result[0].start_time.hour).to eq 10
@@ -137,7 +137,7 @@ module ScrumTime
         day1.add_block(block5)
         day1.add_block(block3)
         day1.add_block(block6)
-        result = day1.reduce_blocks
+        result = day1.consolidate_blocks
 
         expect(result.size).to eq 2
         expect(result[0].start_time.strftime('%H:%M')).to eq '10:30'
@@ -153,11 +153,60 @@ module ScrumTime
         day1.add_block(block4)
         day1.add_block(block5)
         day1.add_block(block6)
-        result = day1.reduce_blocks
+        result = day1.consolidate_blocks
 
         expect(result.size).to eq 1
         expect(result.first.start_time.hour).to eq 8
         expect(result.first.end_time.hour).to eq 15
+      end
+    end
+
+    describe '#availability' do
+      let(:time_20_00) { Time.parse("2021-07-05T20:00:00 #{ScrumTime::TIMEZONE}") }
+      let(:time_09_00) { Time.parse("2021-07-05T09:00:00 #{ScrumTime::TIMEZONE}") }
+      let(:time_16_00) { Time.parse("2021-07-05T16:00:00 #{ScrumTime::TIMEZONE}") }
+      let(:time_17_00) { Time.parse("2021-07-05T17:00:00 #{ScrumTime::TIMEZONE}") }
+
+      let(:block7) { Block.new(time_15_00, time_20_00) }
+      let(:block8) { Block.new(time_09_00, time_10_00) }
+      let(:block9) { Block.new(time_16_00, time_17_00) }
+
+      it 'handles a single block in the middle of the work day' do
+        expected_output = <<-HEREEND
+2021-07-05 09:00 - 10:00
+2021-07-05 11:00 - 17:00
+HEREEND
+
+        day1.add_block(block2)
+        result = day1.availability
+
+        expect(result).to eq expected_output
+      end
+
+      it 'handles blocks overlapping work day start and end times' do
+        expected_output = <<-HEREEND
+2021-07-05 10:00 - 15:00
+HEREEND
+
+        day1.add_block(block1)
+        day1.add_block(block7)
+        result = day1.availability
+
+        expect(result).to eq expected_output
+      end
+
+      it 'handles blocks on boundaries of the work day start and end times' do
+        expected_output = <<-HEREEND
+2021-07-05 10:00 - 12:00
+2021-07-05 15:00 - 16:00
+HEREEND
+
+        day1.add_block(block9)
+        day1.add_block(block8)
+        day1.add_block(block3)
+        result = day1.availability
+
+        expect(result).to eq expected_output
       end
     end
   end

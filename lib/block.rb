@@ -41,9 +41,9 @@ module ScrumTime
       return self if other.nil?   # consider dup here
       return nil if self.relates_to(other) == PRECEDED_BY || self.relates_to(other) == FOLLOWED_BY
 
-      t0 = [start_time, other.start_time].min
-      t1 = [end_time, other.end_time].max
-      Block.new(t0, t1)
+      earlier_start = [start_time, other.start_time].min
+      later_end = [end_time, other.end_time].max
+      Block.new(earlier_start, later_end)
     end
   end
 end
