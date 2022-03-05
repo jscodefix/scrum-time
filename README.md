@@ -10,7 +10,8 @@ $ rspec spec/
 
 ## My Guiding Principles
 - solve the problem according to the rules (specified below, see Background section)
-- use a minimalist approach by not adding extra functionality
+- use a minimalist approach by not adding extra functionality, but ...
+- create a solution that is generalized and extensible (and not limited by constraints)
 - use OOP
 - use TDD
 - show Ruby programming best practices
@@ -23,6 +24,7 @@ $ rspec spec/
 - adding a single require 'rspec' line to any spec.rb activates RSpec in Intellij
 - running tests requires exposing class attributes (attr_reader)?
 - might have used OpenStruct
+- may want to freeze Time elements and Blocks
 
 # Background
 

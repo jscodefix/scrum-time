@@ -26,7 +26,7 @@ module ScrumTime
       start_time.year != end_time.year || start_time.yday != end_time.yday
     end
 
-    def compares_to(other)
+    def relates_to(other)
       return PRECEDED_BY if other.end_time < start_time
       return INTERSECTED_ABOVE_BY if other.start_time <= start_time && other.end_time <= end_time
       return SURROUNDED_BY if other.start_time <= start_time && other.end_time >= end_time
@@ -35,6 +35,15 @@ module ScrumTime
       return SURROUNDS if other.start_time > start_time && other.end_time <= end_time
 
       raise 'comparison failed'
+    end
+
+    def merge(other)
+      return self if other.nil?   # consider dup here
+      return nil if self.relates_to(other) == PRECEDED_BY || self.relates_to(other) == FOLLOWED_BY
+
+      t0 = [start_time, other.start_time].min
+      t1 = [end_time, other.end_time].max
+      Block.new(t0, t1)
     end
   end
 end
