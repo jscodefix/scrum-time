@@ -1,19 +1,31 @@
-# Submission by Jeff Sheffel (jscodefix)
+# ScrumTime Code Challenge Submission
+### by Jeff Sheffel (jscodefix)
 ### March 7, 2022
 
-## How to Execute
-$ ./availability.rb &lt;comma-separated-list-of-usernames&gt;
-- unknown usernames will be ignored
+This small Ruby repository solves a code challenge that involves showing blocks of time in a day that
+are available, when considering the working schedules for a given set of persons.
+While this initially appears to be a simple problem to solve... it is not.
 
+## How to Execute
+$ ./availability.rb &lt;comma-separated-list-of-names&gt;
+- person names are contained in the users.json database file
+- unknown names on the command line will be ignored
+- the preexisting person block schedules are contained in the events.json database file
+
+### Example Execution
+$ ./availability.rb Maggie,Joe,Jordan   # refer to expected output in Instructions section below
+
+### Rspec Tests
 The test suite can be executed as:
+
 $ rspec spec/
 
 ## My Guiding Principles
 - solve the problem according to the rules (specified below, see Background section)
 - use a minimalist approach by not adding extra functionality, but ...
 - create a solution that is generalized and extensible (and not limited by constraints)
-- use OOP
 - use TDD
+- use OOP
 - show Ruby programming best practices
 
 ## Notes
@@ -24,9 +36,10 @@ $ rspec spec/
 
 ## Discoveries
 - adding a single require 'rspec' line to any spec.rb activates RSpec in Intellij
-- running tests requires exposing class attributes (attr_reader)?
-- might have used OpenStruct
-- may want to freeze Time elements and Blocks
+- running tests requires exposing class attributes (via attr_reader)
+- might have used OpenStruct for the Block object
+- may want to freeze the Time and Block objects
+- daylight savings time, as set at the system or Ruby level, could have adverse timestamp effects
 
 ---
 # Background

@@ -7,8 +7,8 @@ raise "USAGE: #{$PROGRAM_NAME} <comma-separated-list-of-usernames>" if ARGV[0].n
 
 requested_users = ARGV[0].split(',')
 
-WORK_START_HOUR = 13
-WORK_END_HOUR = 21
+WORK_START_HOUR = 13  # 09:00 Eastern timezone (ET)
+WORK_END_HOUR = 21    # 17:00 Eastern timezone (ET)
 
 # read data files
 user_file = File.read('./data/users.json')
@@ -23,7 +23,7 @@ relevant_events = events_for_requested_users(requested_users, event_database, us
   add_event_blocks(day, relevant_events)
 
   availability_text = day.availability
-  puts "#{availability_text} \n" if !availability_text.nil?
+  puts "#{availability_text} \n" unless availability_text.nil?
 }
 
 BEGIN {
@@ -31,6 +31,7 @@ BEGIN {
     result = []
     requested_users.each do |username|
       user = users.find { |user| user['name'] == username }
+      next if user.nil?
       result += events.select { |event| event['user_id'] == user['id'] }
     end
 

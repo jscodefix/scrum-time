@@ -13,8 +13,8 @@ module ScrumTime
     attr_reader :start_time, :end_time
 
     def initialize(start_time, end_time)
-      @start_time = start_time
-      @end_time = end_time
+      @start_time = time_as_object(start_time)
+      @end_time = time_as_object(end_time)
       validate
     end
 
@@ -44,6 +44,15 @@ module ScrumTime
       earlier_start = [start_time, other.start_time].min
       later_end = [end_time, other.end_time].max
       Block.new(earlier_start, later_end)
+    end
+
+    private
+
+    def time_as_object(timestamp)
+      return timestamp if timestamp.is_a?(Time)
+      return Time.parse("#{timestamp} #{ScrumTime::TIMEZONE}") if timestamp.is_a?(String)
+
+      raise 'invalid timestamp specified'
     end
   end
 end

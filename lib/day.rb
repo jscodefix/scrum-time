@@ -59,17 +59,13 @@ module ScrumTime
         b
       end
 
-      (availability_strings.join("\n") + "\n") if !availability_strings.empty?
+      (availability_strings.join("\n") + "\n") unless availability_strings.empty?
     end
 
     private
 
     def block_outside_of_work_day(block)
       block.start_time < day_start_time || block.start_time > day_end_time
-    end
-
-    def block_outside_work_hours(block)
-      block.nil? || block.end_time < work_start_time || block.start_time > work_end_time
     end
 
     def before_work_day_block
