@@ -31,7 +31,7 @@ module ScrumTime
       return INTERSECTED_ABOVE_BY if other.start_time <= start_time && other.end_time <= end_time
       return SURROUNDED_BY if other.start_time <= start_time && other.end_time >= end_time
       return INTERSECTED_BELOW_BY if other.start_time <= end_time && other.end_time > end_time
-      return FOLLOWED_BY if other.start_time >= end_time
+      return FOLLOWED_BY if other.start_time > end_time
       return SURROUNDS if other.start_time > start_time && other.end_time <= end_time
 
       raise 'comparison failed'
