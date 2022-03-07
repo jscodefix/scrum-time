@@ -26,7 +26,7 @@ module ScrumTime
     let(:block5) { Block.new(time_09_00, time_15_00) }
 
     describe '#new' do
-      it 'creates a day with start and end times' do
+      it 'creates a block with start and end times' do
         block = Block.new(start_time, end_time)
 
         expect(block.start_time).to be_a(Time)

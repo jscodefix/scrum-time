@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'scrum_time'
+require_relative './scrum_time'
+require_relative './block'
 require 'time'
 
 module ScrumTime

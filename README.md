@@ -1,5 +1,5 @@
 # Submission by Jeff Sheffel (jscodefix)
-### March 6, 2022
+### March 7, 2022
 
 ## How to Execute
 $ ./availability.rb &lt;comma-separated-list-of-usernames&gt;
@@ -20,7 +20,7 @@ $ rspec spec/
 - developed with Ruby 3.1
 - assumes input data (files) are clean and normalized
 - times are specified in UTC
-- working hours are configurable
+- working hours are configurable and configured as 13:00 to 21:00 UTC (which is 09:00 to 17:00 ET)
 
 ## Discoveries
 - adding a single require 'rspec' line to any spec.rb activates RSpec in Intellij
