@@ -91,7 +91,7 @@ module ScrumTime
 
       it 'handles a single block' do
         day1.add_block(block2)
-        result = day1.consolidate_blocks
+        result = day1.consolidate_blocks(day1.unavailable_blocks)
 
         expect(result.size).to eq 1
         expect(result.first.start_time.hour).to eq 10
@@ -101,7 +101,7 @@ module ScrumTime
       it 'handles two non-intersecting block' do
         day1.add_block(block2)
         day1.add_block(block3)
-        result = day1.consolidate_blocks
+        result = day1.consolidate_blocks(day1.unavailable_blocks)
 
         expect(result.size).to eq 2
         expect(result[0].start_time.hour).to eq 10
@@ -113,7 +113,7 @@ module ScrumTime
       it 'handles two intersecting block' do
         day1.add_block(block2)
         day1.add_block(block5)
-        result = day1.consolidate_blocks
+        result = day1.consolidate_blocks(day1.unavailable_blocks)
 
         expect(result.size).to eq 1
         expect(result.first.start_time.hour).to eq 10
@@ -124,7 +124,7 @@ module ScrumTime
         day1.add_block(block2)
         day1.add_block(block5)
         day1.add_block(block3)
-        result = day1.consolidate_blocks
+        result = day1.consolidate_blocks(day1.unavailable_blocks)
 
         expect(result.size).to eq 2
         expect(result[0].start_time.hour).to eq 10
@@ -137,7 +137,7 @@ module ScrumTime
         day1.add_block(block5)
         day1.add_block(block3)
         day1.add_block(block6)
-        result = day1.consolidate_blocks
+        result = day1.consolidate_blocks(day1.unavailable_blocks)
 
         expect(result.size).to eq 2
         expect(result[0].start_time.strftime('%H:%M')).to eq '10:30'
@@ -153,7 +153,7 @@ module ScrumTime
         day1.add_block(block4)
         day1.add_block(block5)
         day1.add_block(block6)
-        result = day1.consolidate_blocks
+        result = day1.consolidate_blocks(day1.unavailable_blocks)
 
         expect(result.size).to eq 1
         expect(result.first.start_time.hour).to eq 8
@@ -162,14 +162,19 @@ module ScrumTime
     end
 
     describe '#availability' do
-      let(:time_20_00) { Time.parse("2021-07-05T20:00:00 #{ScrumTime::TIMEZONE}") }
+      let(:time_07_00) { Time.parse("2021-07-05T07:00:00 #{ScrumTime::TIMEZONE}") }
       let(:time_09_00) { Time.parse("2021-07-05T09:00:00 #{ScrumTime::TIMEZONE}") }
       let(:time_16_00) { Time.parse("2021-07-05T16:00:00 #{ScrumTime::TIMEZONE}") }
       let(:time_17_00) { Time.parse("2021-07-05T17:00:00 #{ScrumTime::TIMEZONE}") }
+      let(:time_18_00) { Time.parse("2021-07-05T18:00:00 #{ScrumTime::TIMEZONE}") }
+      let(:time_20_00) { Time.parse("2021-07-05T20:00:00 #{ScrumTime::TIMEZONE}") }
 
       let(:block7) { Block.new(time_15_00, time_20_00) }
       let(:block8) { Block.new(time_09_00, time_10_00) }
       let(:block9) { Block.new(time_16_00, time_17_00) }
+      let(:block10) { Block.new(time_07_00, time_08_00) }
+      let(:block11) { Block.new(time_18_00, time_20_00) }
+      let(:block12) { Block.new(time_08_00, time_18_00) }
 
       it 'handles a single block in the middle of the work day' do
         expected_output = <<-HEREEND
@@ -207,6 +212,25 @@ HEREEND
         result = day1.availability
 
         expect(result).to eq expected_output
+      end
+
+      it 'handles blocks outside of boundaries of the work day start and end times' do
+        expected_output = <<-HEREEND
+2021-07-05 09:00 - 17:00
+HEREEND
+
+        day1.add_block(block10)
+        day1.add_block(block11)
+        result = day1.availability
+
+        expect(result).to eq expected_output
+      end
+
+      it 'handles no availability' do
+        day1.add_block(block12)
+        result = day1.availability
+
+        expect(result).to eq nil
       end
     end
   end

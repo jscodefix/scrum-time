@@ -1,8 +1,8 @@
 # Submission by Jeff Sheffel (jscodefix)
-### March 3, 2022
+### March 6, 2022
 
 ## How to Execute
-$ ./availability.rb <comma-separated-list-of-usernames>
+$ ./availability.rb &lt;comma-separated-list-of-usernames&gt;
 - unknown usernames will be ignored
 
 The test suite can be executed as:
@@ -19,6 +19,8 @@ $ rspec spec/
 ## Notes
 - developed with Ruby 3.1
 - assumes input data (files) are clean and normalized
+- times are specified in UTC
+- working hours are configurable
 
 ## Discoveries
 - adding a single require 'rspec' line to any spec.rb activates RSpec in Intellij
@@ -26,11 +28,12 @@ $ rspec spec/
 - might have used OpenStruct
 - may want to freeze Time elements and Blocks
 
+---
 # Background
 
 Most calendar applications provide some kind of "meet with" feature where the user
 can input a list of coworkers with whom they want to meet, and the calendar will
-output a list of times where all the coworkers are available.
+output a list of times when all the coworkers are available.
 
 For example, say that we want to schedule a meeting with Jane, John, and Mary on Monday.
 
@@ -43,7 +46,6 @@ Based on that information, our calendar app should tell us that everyone is avai
 - 1pm - 3pm
 
 We can then schedule a meeting during any of those available times.
-
 
 # Instructions
 

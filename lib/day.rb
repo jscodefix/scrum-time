@@ -25,14 +25,13 @@ module ScrumTime
     end
 
     def add_block(block)
-      return unavailable_blocks if block.start_time < day_start_time || block.start_time > day_end_time
+      return unavailable_blocks if block_outside_of_work_day(block)
 
       unavailable_blocks.push(block).sort_by!(&:start_time)
     end
 
-    def consolidate_blocks
+    def consolidate_blocks(blocks)
       consolidated = []
-      blocks = unavailable_blocks.dup
       blocks.push(nil).reduce do |a, b|
         if b.nil? || a.relates_to(b) == Block::FOLLOWED_BY
           consolidated << a
@@ -47,24 +46,41 @@ module ScrumTime
 
     def availability
       availability_strings = []
-      consolidated = consolidate_blocks.dup
-      consolidated.unshift(nil) if consolidated.first.start_time > work_start_time
-      consolidated.push(nil) if consolidated.last.end_time < work_end_time
+      day_blocks = unavailable_blocks.dup
+      day_blocks.unshift(before_work_day_block)
+      day_blocks.push(after_work_day_block)
+      consolidated = consolidate_blocks(day_blocks)
 
       consolidated.reduce do |a, b|
         availability_strings.push(inter_block_availability(a, b))
         b
       end
 
-      availability_strings.join("\n") + "\n"
+      (availability_strings.join("\n") + "\n") if !availability_strings.empty?
     end
 
     private
 
+    def block_outside_of_work_day(block)
+      block.start_time < day_start_time || block.start_time > day_end_time
+    end
+
+    def block_outside_work_hours(block)
+      block.nil? || block.end_time < work_start_time || block.start_time > work_end_time
+    end
+
+    def before_work_day_block
+      Block.new(day_start_time, work_start_time)
+    end
+
+    def after_work_day_block
+      Block.new(work_end_time, day_end_time)
+    end
+
     def inter_block_availability(a = nil, b = nil)
-      date = [a, b].find { |x| !x.nil? }.start_time.strftime('%Y-%m-%d')
-      begin_time = a.nil? ? work_start_time.strftime('%H:%M') : a.end_time.strftime('%H:%M')
-      end_time = b.nil? ? work_end_time.strftime('%H:%M') : b.start_time.strftime('%H:%M')
+      date = day_start_time.strftime('%Y-%m-%d')
+      begin_time = a.end_time.strftime('%H:%M')
+      end_time = b.start_time.strftime('%H:%M')
       "#{date} #{begin_time} - #{end_time}"
     end
   end
