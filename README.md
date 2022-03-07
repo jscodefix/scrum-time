@@ -20,6 +20,17 @@ The test suite can be executed as:
 
 $ rspec spec/
 
+## My Solution
+My solution involved creating two classes: Day and Block. A Day contains a sorted array of Blocks that
+are created from the user events. To solve the availability for each Day, the Blocks are merged,
+where possible. Then, the gaps between the Blocks are presented as the availability solution.
+
+There are edge cases for the work day start and end hours.
+Those working hours are configurable and configured as: 13:00 to 21:00 UTC (which is 09:00 to 17:00 ET).
+
+Refer to the `./doc/diagram-class-scrum-time.jpg` image file for a simple class diagram and
+a view of possible Block relationships within a Day.
+
 ## My Guiding Principles
 - solve the problem according to the rules (specified below, see Background section)
 - use a minimalist approach by not adding extra functionality, but ...
@@ -31,8 +42,7 @@ $ rspec spec/
 ## Notes
 - developed with Ruby 3.1
 - assumes input data (files) are clean and normalized
-- times are specified in UTC
-- working hours are configurable and configured as 13:00 to 21:00 UTC (which is 09:00 to 17:00 ET)
+- all timestamps are specified in UTC
 
 ## Discoveries
 - adding a single require 'rspec' line to any spec.rb activates RSpec in Intellij
