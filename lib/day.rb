@@ -3,25 +3,27 @@ require 'scrum_time'
 require 'time'
 
 module ScrumTime
-  WORK_START_TIME_HOUR = 9
-  WORK_END_TIME_HOUR = 17
+  DEFAULT_WORK_START_HOUR = 9
+  DEFAULT_WORK_END_HOUR = 17
   DAY_DURATION = (24 * 60 * 60) - 1
 
   class Day
     attr_reader :day_start_time, :day_end_time, :work_start_time, :work_end_time, :unavailable_blocks
 
-    def initialize(date)
+    def initialize(date, work_start_hour = nil, work_end_hour = nil)
       @day_start_time = Time.parse("#{date} 00:00:00 #{ScrumTime::TIMEZONE}")
       @day_end_time = @day_start_time + DAY_DURATION
+      @work_start_hour = work_start_hour || DEFAULT_WORK_START_HOUR
+      @work_end_hour = work_end_hour || DEFAULT_WORK_END_HOUR
       @unavailable_blocks = []
     end
 
     def work_start_time
-      @work_start_time ||= @day_start_time + WORK_START_TIME_HOUR * 60 * 60
+      @work_start_time ||= @day_start_time + @work_start_hour * 60 * 60
     end
 
     def work_end_time
-      @work_end_time ||= @day_start_time + WORK_END_TIME_HOUR * 60 * 60
+      @work_end_time ||= @day_start_time + @work_end_hour * 60 * 60
     end
 
     def add_block(block)

@@ -33,6 +33,13 @@ module ScrumTime
         expect(day1.unavailable_blocks).to be_a(Array)
         expect(day1.unavailable_blocks).to be_empty
       end
+
+      it 'has a configurable work day start hour and end hour' do
+        day_odd_work_hours = Day.new(day1_date, 13, 21)
+
+        expect(day_odd_work_hours.work_start_time.hour).to eq 13
+        expect(day_odd_work_hours.work_end_time.hour).to eq 21
+      end
     end
 
     describe '#add_block' do
