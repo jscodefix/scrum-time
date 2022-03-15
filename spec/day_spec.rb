@@ -12,11 +12,13 @@ module ScrumTime
     let(:time_11_00) { "2021-07-05T11:00:00" }
     let(:time_12_00) { "2021-07-05T12:00:00" }
     let(:time_15_00) { "2021-07-05T15:00:00" }
+    let(:time_20_00) { "2021-07-05T20:00:00" }
 
     let(:block_8_to_10) { Block.new(time_08_00, time_10_00) }
     let(:block_10_to_11) { Block.new(time_10_00, time_11_00) }
     let(:block_12_to_15) { Block.new(time_12_00, time_15_00) }
     let(:block_10_to_15) { Block.new(time_10_00, time_15_00) }
+    let(:block_15_to_20) { Block.new(time_15_00, time_20_00) }
 
     describe '#new' do
       it 'has a day start and end time' do
@@ -87,7 +89,7 @@ module ScrumTime
       end
     end
 
-    describe '#reduce_blocks' do
+    describe '#consolidate_blocks' do
       let(:time_10_30) { "2021-07-05T10:30:00" }
       let(:time_11_30) { "2021-07-05T11:30:00" }
       let(:time_13_30) { "2021-07-05T13:30:00" }
@@ -174,11 +176,9 @@ module ScrumTime
       let(:time_16_00) { "2021-07-05T16:00:00" }
       let(:time_17_00) { "2021-07-05T17:00:00" }
       let(:time_18_00) { "2021-07-05T18:00:00" }
-      let(:time_20_00) { "2021-07-05T20:00:00" }
 
-      let(:block7) { Block.new(time_15_00, time_20_00) }
-      let(:block8) { Block.new(time_09_00, time_10_00) }
-      let(:block9) { Block.new(time_16_00, time_17_00) }
+      let(:block_9_to_10) { Block.new(time_09_00, time_10_00) }
+      let(:block_16_to_17) { Block.new(time_16_00, time_17_00) }
       let(:block_7_to_8) { Block.new(time_07_00, time_08_00) }
       let(:block_18_to_20) { Block.new(time_18_00, time_20_00) }
       let(:block_8_to_18) { Block.new(time_08_00, time_18_00) }
@@ -187,7 +187,7 @@ module ScrumTime
         expected_output = <<-HEREEND
 2021-07-05 09:00 - 10:00
 2021-07-05 11:00 - 17:00
-HEREEND
+        HEREEND
 
         day1.add_block(block_10_to_11)
         result = day1.availability
@@ -198,10 +198,10 @@ HEREEND
       it 'handles blocks overlapping work day start and end times' do
         expected_output = <<-HEREEND
 2021-07-05 10:00 - 15:00
-HEREEND
+        HEREEND
 
         day1.add_block(block_8_to_10)
-        day1.add_block(block7)
+        day1.add_block(block_15_to_20)
         result = day1.availability
 
         expect(result).to eq expected_output
@@ -211,10 +211,10 @@ HEREEND
         expected_output = <<-HEREEND
 2021-07-05 10:00 - 12:00
 2021-07-05 15:00 - 16:00
-HEREEND
+        HEREEND
 
-        day1.add_block(block9)
-        day1.add_block(block8)
+        day1.add_block(block_16_to_17)
+        day1.add_block(block_9_to_10)
         day1.add_block(block_12_to_15)
         result = day1.availability
 
@@ -224,7 +224,7 @@ HEREEND
       it 'handles blocks outside of boundaries of the work day start and end times' do
         expected_output = <<-HEREEND
 2021-07-05 09:00 - 17:00
-HEREEND
+        HEREEND
 
         day1.add_block(block_7_to_8)
         day1.add_block(block_18_to_20)
